@@ -36,7 +36,7 @@ Row-Level Security is enabled on all tables.  The first registered user automati
 ### 1. Clone and install
 
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/Soniqmango/volunteer_scheduling.git
 cd volunteer_scheduling
 npm install
 ```
