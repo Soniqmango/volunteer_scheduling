@@ -9,6 +9,8 @@ interface Props {
   signups: Signup[];
   closedDate: ClosedDate | undefined;
   isAdmin: boolean;
+  isToday: boolean;
+  isPast: boolean;
   currentUserId: string;
   allProfiles: Profile[];
   coverageCount: number;
@@ -24,6 +26,8 @@ export default function ShiftCard({
   signups,
   closedDate,
   isAdmin,
+  isToday,
+  isPast,
   currentUserId,
   allProfiles,
   coverageCount,
@@ -59,21 +63,26 @@ export default function ShiftCard({
   );
 
   return (
-    <div className="rounded-xl border border-gray-200 bg-white shadow-sm">
+    <div className={`rounded-xl border shadow-sm ${isPast && !isToday ? 'border-gray-200 bg-gray-50 opacity-75' : 'border-gray-200 bg-white'}`}>
       {/* ── Header ─────────────────────────────────────────────────────────── */}
       <div
         className={`flex items-center justify-between px-3 pt-3 pb-2 rounded-t-xl ${
-          config.type === 'morning' ? 'bg-sky-50' : 'bg-amber-50'
+          isPast && !isToday
+            ? 'bg-gray-100'
+            : config.type === 'morning' ? 'bg-sky-50' : 'bg-amber-50'
         }`}
       >
         <div className="flex items-center gap-1.5 min-w-0">
           {config.type === 'morning' ? (
-            <Sun className="w-4 h-4 text-sky-500 flex-shrink-0" />
+            <Sun className={`w-4 h-4 flex-shrink-0 ${isPast && !isToday ? 'text-gray-400' : 'text-sky-500'}`} />
           ) : (
-            <Sunset className="w-4 h-4 text-amber-500 flex-shrink-0" />
+            <Sunset className={`w-4 h-4 flex-shrink-0 ${isPast && !isToday ? 'text-gray-400' : 'text-amber-500'}`} />
           )}
           <span className="text-sm font-semibold text-gray-700">{config.label}</span>
           <span className="text-xs text-gray-500 hidden lg:inline">{config.time}</span>
+          {isPast && !isToday && (
+            <span className="text-xs text-gray-400 font-normal">· Past</span>
+          )}
         </div>
         <span
           className={`text-xs font-medium px-2 py-0.5 rounded-full flex-shrink-0 ${
@@ -93,6 +102,7 @@ export default function ShiftCard({
             slotIndex={i}
             isAdmin={isAdmin}
             isOwnSlot={signup?.volunteer_id === currentUserId}
+            isPast={isPast && !isToday}
             allProfiles={allProfiles}
             onSignup={() => onSignup(date, config.type, currentUserId)}
             onCancel={onCancel}

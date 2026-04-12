@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { ChevronLeft, ChevronRight, CalendarDays } from 'lucide-react';
+import { ChevronLeft, ChevronRight, CalendarDays, CalendarCheck } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import ShiftCard from '../components/ShiftCard';
 import { useAuth } from '../context/AuthContext';
@@ -9,6 +9,7 @@ import { useClosedDates } from '../hook/useClosedDates';
 import { Profile, SHIFTS } from '../types';
 import {
   parseWeekParam,
+  getWeekStart,
   getWeekDates,
   nextWeek,
   prevWeek,
@@ -23,9 +24,11 @@ export default function WeekView() {
   const { profile } = useAuth();
   const isAdmin = profile?.role === 'admin';
 
+  const todayStr   = toDateString(new Date());
   const weekStart  = parseWeekParam(searchParams.get('week'));
   const weekDates  = getWeekDates(weekStart);
   const dateKey    = weekDates.map(toDateString).join(',');
+  const isCurrentWeek = weekDates.some(d => toDateString(d) === todayStr);
 
   const { loading, getShiftSignups, signup, cancelSignup, markFulfilled } =
     useSignups(weekDates);
@@ -103,9 +106,15 @@ export default function WeekView() {
                 {formatMonthRange(weekStart)}
               </h2>
             </div>
-            <p className="text-xs text-gray-400 mt-0.5">
-              {toDateString(weekDates[0])} – {toDateString(weekDates[4])}
-            </p>
+            {!isCurrentWeek && (
+              <button
+                onClick={() => setSearchParams({ week: toDateString(getWeekStart(new Date())) })}
+                className="mt-1 inline-flex items-center gap-1 text-xs text-indigo-600 hover:text-indigo-800 font-medium"
+              >
+                <CalendarCheck className="w-3.5 h-3.5" />
+                Back to today
+              </button>
+            )}
           </div>
 
           <button
@@ -120,20 +129,29 @@ export default function WeekView() {
         {/* ── 5-column day grid ────────────────────────────────────────────── */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
           {weekDates.map(date => {
-            const dateStr = toDateString(date);
-            const closed  = getClosedDate(dateStr);
+            const dateStr  = toDateString(date);
+            const closed   = getClosedDate(dateStr);
+            const isToday  = dateStr === todayStr;
+            const isPast   = dateStr < todayStr;
 
             return (
               <div key={dateStr} className="space-y-3">
                 {/* Day header */}
                 <div
-                  className={`text-center rounded-xl py-2.5 px-2 ${
+                  className={`text-center rounded-xl py-2.5 px-2 ring-2 ${
                     closed
-                      ? 'bg-gray-200 text-gray-500'
-                      : 'bg-indigo-600 text-white'
+                      ? 'bg-gray-200 text-gray-500 ring-transparent'
+                      : isToday
+                      ? 'bg-indigo-600 text-white ring-yellow-400'
+                      : isPast
+                      ? 'bg-gray-400 text-white ring-transparent'
+                      : 'bg-indigo-600 text-white ring-transparent'
                   }`}
                 >
                   <p className="text-sm font-semibold">{formatDayHeader(date)}</p>
+                  {isToday && (
+                    <p className="text-xs font-semibold text-yellow-300 mt-0.5">Today</p>
+                  )}
                   {closed && (
                     <p className="text-xs opacity-75 mt-0.5">
                       {closed.reason ?? 'Closed'}
@@ -150,6 +168,8 @@ export default function WeekView() {
                     signups={getShiftSignups(dateStr, shift.type)}
                     closedDate={closed}
                     isAdmin={isAdmin}
+                    isToday={isToday}
+                    isPast={isPast}
                     currentUserId={profile?.id ?? ''}
                     allProfiles={allProfiles}
                     coverageCount={coverageCounts[`${dateStr}-${shift.type}`] ?? 0}

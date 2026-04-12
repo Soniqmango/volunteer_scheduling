@@ -7,6 +7,7 @@ interface Props {
   slotIndex: number;
   isAdmin: boolean;
   isOwnSlot: boolean;
+  isPast: boolean;
   allProfiles: Profile[];
   onSignup: () => void;
   onCancel: (id: string) => void;
@@ -19,6 +20,7 @@ export default function SlotRow({
   slotIndex,
   isAdmin,
   isOwnSlot,
+  isPast,
   allProfiles,
   onSignup,
   onCancel,
