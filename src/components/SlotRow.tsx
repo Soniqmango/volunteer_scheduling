@@ -44,26 +44,25 @@ export default function SlotRow({
       <div
         className={`flex items-center justify-between px-3 py-2 rounded-lg border ${
           signup.is_fulfilled
-            ? 'bg-green-50 border-green-200'
-            : 'bg-white border-gray-200'
+            ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800'
+            : 'bg-white dark:bg-gray-750 border-gray-200 dark:border-gray-600'
         }`}
       >
         <div className="flex items-center gap-2 min-w-0">
-          <span className="w-7 h-7 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center text-xs font-semibold flex-shrink-0">
+          <span className="w-7 h-7 rounded-full bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 flex items-center justify-center text-xs font-semibold flex-shrink-0">
             {signup.volunteer.full_name.charAt(0).toUpperCase()}
           </span>
-          <span className="text-sm font-medium text-gray-800 truncate">
+          <span className="text-sm font-medium text-gray-800 dark:text-gray-100 truncate">
             {signup.volunteer.full_name}
           </span>
           {signup.is_fulfilled && (
-            <span className="text-xs bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full font-medium whitespace-nowrap">
+            <span className="text-xs bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-400 px-1.5 py-0.5 rounded-full font-medium whitespace-nowrap">
               Done
             </span>
           )}
         </div>
 
         <div className="flex items-center gap-0.5 flex-shrink-0">
-          {/* Admin can always mark fulfilled (past or not) */}
           {isAdmin && (
             <button
               onClick={() => onFulfill(signup.id, !signup.is_fulfilled)}
@@ -77,7 +76,6 @@ export default function SlotRow({
               )}
             </button>
           )}
-          {/* Volunteers can't cancel past shifts; admins always can */}
           {((isOwnSlot && !isPast) || isAdmin) && (
             <button
               onClick={handleCancel}
@@ -94,19 +92,18 @@ export default function SlotRow({
 
   // ── Empty slot ───────────────────────────────────────────────────────────
   return (
-    <div className="flex items-center justify-between px-3 py-2 rounded-lg border border-dashed border-gray-300 bg-gray-50">
-      <span className="text-sm text-gray-400">
+    <div className="flex items-center justify-between px-3 py-2 rounded-lg border border-dashed border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700/50">
+      <span className="text-sm text-gray-400 dark:text-gray-500">
         {isPast && !isAdmin ? 'Slot unfilled' : `Slot ${slotIndex + 1} – Open`}
       </span>
 
-      {/* Past shift: volunteers see nothing; admins can still add for record-keeping */}
       {isPast && !isAdmin ? null : isAdmin ? (
         showAdminAdd ? (
           <div className="flex items-center gap-1.5">
             <select
               value={selectedVolId}
               onChange={e => setSelectedVolId(e.target.value)}
-              className="text-xs border border-gray-300 rounded px-1.5 py-1 bg-white focus:outline-none focus:ring-1 focus:ring-indigo-400 max-w-[130px]"
+              className="text-xs border border-gray-300 dark:border-gray-600 rounded px-1.5 py-1 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-indigo-400 max-w-[130px]"
             >
               <option value="">Select…</option>
               {allProfiles.map(p => (
@@ -130,7 +127,7 @@ export default function SlotRow({
             </button>
             <button
               onClick={() => { setShowAdminAdd(false); setSelectedVolId(''); }}
-              className="text-xs text-gray-400 hover:text-gray-600 px-1"
+              className="text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 px-1"
             >
               ✕
             </button>
@@ -138,7 +135,7 @@ export default function SlotRow({
         ) : (
           <button
             onClick={() => setShowAdminAdd(true)}
-            className="flex items-center gap-1 text-xs text-indigo-600 hover:text-indigo-800 font-medium transition-colors"
+            className="flex items-center gap-1 text-xs text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 font-medium transition-colors"
           >
             <UserPlus className="w-3.5 h-3.5" /> Add
           </button>

@@ -1,9 +1,11 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { CalendarDays, LayoutDashboard, LogOut, Users, ListChecks } from 'lucide-react';
+import { CalendarDays, LayoutDashboard, LogOut, Users, ListChecks, Sun, Moon } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 
 export default function Navbar() {
   const { profile, signOut } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
 
   async function handleSignOut() {
@@ -12,7 +14,7 @@ export default function Navbar() {
   }
 
   return (
-    <nav className="bg-indigo-700 text-white shadow-md">
+    <nav className="bg-indigo-700 dark:bg-indigo-900 text-white shadow-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <Link
@@ -27,7 +29,7 @@ export default function Navbar() {
           <div className="flex items-center gap-1 sm:gap-4">
             <Link
               to="/schedule"
-              className="flex items-center gap-1 text-sm px-2 py-1 rounded hover:bg-indigo-600 transition-colors"
+              className="flex items-center gap-1 text-sm px-2 py-1 rounded hover:bg-indigo-600 dark:hover:bg-indigo-800 transition-colors"
             >
               <CalendarDays className="w-4 h-4" />
               <span className="hidden sm:inline">Schedule</span>
@@ -35,7 +37,7 @@ export default function Navbar() {
 
             <Link
               to="/my-shifts"
-              className="flex items-center gap-1 text-sm px-2 py-1 rounded hover:bg-indigo-600 transition-colors"
+              className="flex items-center gap-1 text-sm px-2 py-1 rounded hover:bg-indigo-600 dark:hover:bg-indigo-800 transition-colors"
             >
               <ListChecks className="w-4 h-4" />
               <span className="hidden sm:inline">My Shifts</span>
@@ -45,14 +47,14 @@ export default function Navbar() {
               <>
                 <Link
                   to="/admin"
-                  className="flex items-center gap-1 text-sm px-2 py-1 rounded hover:bg-indigo-600 transition-colors"
+                  className="flex items-center gap-1 text-sm px-2 py-1 rounded hover:bg-indigo-600 dark:hover:bg-indigo-800 transition-colors"
                 >
                   <LayoutDashboard className="w-4 h-4" />
                   <span className="hidden sm:inline">Dashboard</span>
                 </Link>
                 <Link
                   to="/admin/users"
-                  className="flex items-center gap-1 text-sm px-2 py-1 rounded hover:bg-indigo-600 transition-colors"
+                  className="flex items-center gap-1 text-sm px-2 py-1 rounded hover:bg-indigo-600 dark:hover:bg-indigo-800 transition-colors"
                 >
                   <Users className="w-4 h-4" />
                   <span className="hidden sm:inline">Users</span>
@@ -67,8 +69,16 @@ export default function Navbar() {
             )}
 
             <button
+              onClick={toggleTheme}
+              className="flex items-center gap-1 text-sm px-2 py-1 rounded hover:bg-indigo-600 dark:hover:bg-indigo-800 transition-colors"
+              title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+            >
+              {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            </button>
+
+            <button
               onClick={handleSignOut}
-              className="flex items-center gap-1 text-sm px-2 py-1 rounded hover:bg-indigo-600 transition-colors"
+              className="flex items-center gap-1 text-sm px-2 py-1 rounded hover:bg-indigo-600 dark:hover:bg-indigo-800 transition-colors"
               title="Sign out"
             >
               <LogOut className="w-4 h-4" />

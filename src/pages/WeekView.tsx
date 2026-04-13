@@ -37,7 +37,6 @@ export default function WeekView() {
   const [allProfiles, setAllProfiles] = useState<Profile[]>([]);
   const [coverageCounts, setCoverageCounts] = useState<Record<string, number>>({});
 
-  // Profiles list for admin "add volunteer" dropdown
   useEffect(() => {
     if (!isAdmin) return;
     supabase
@@ -49,7 +48,6 @@ export default function WeekView() {
       });
   }, [isAdmin]);
 
-  // Coverage request counts for this week (real-time)
   useEffect(() => {
     const dates = dateKey.split(',');
 
@@ -85,7 +83,7 @@ export default function WeekView() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
         <Navbar />
         <div className="flex items-center justify-center py-32">
           <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-indigo-600" />
@@ -95,7 +93,7 @@ export default function WeekView() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Navbar />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -103,7 +101,7 @@ export default function WeekView() {
         <div className="flex items-center justify-between mb-6 gap-2">
           <button
             onClick={() => navigate('prev')}
-            className="flex items-center gap-1 text-sm text-gray-600 hover:text-indigo-700 bg-white border border-gray-200 rounded-lg px-3 py-2 shadow-sm hover:shadow transition-all"
+            className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-300 hover:text-indigo-700 dark:hover:text-indigo-400 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 shadow-sm hover:shadow transition-all"
           >
             <ChevronLeft className="w-4 h-4" />
             <span className="hidden sm:inline">Prev</span>
@@ -112,14 +110,14 @@ export default function WeekView() {
           <div className="text-center">
             <div className="flex items-center justify-center gap-2">
               <CalendarDays className="w-5 h-5 text-indigo-500" />
-              <h2 className="text-lg font-bold text-gray-800">
+              <h2 className="text-lg font-bold text-gray-800 dark:text-gray-100">
                 {formatMonthRange(weekStart)}
               </h2>
             </div>
             {!isCurrentWeek && (
               <button
                 onClick={() => setSearchParams({ week: toDateString(getWeekStart(new Date())) })}
-                className="mt-1 inline-flex items-center gap-1 text-xs text-indigo-600 hover:text-indigo-800 font-medium"
+                className="mt-1 inline-flex items-center gap-1 text-xs text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 font-medium"
               >
                 <CalendarCheck className="w-3.5 h-3.5" />
                 Back to today
@@ -129,7 +127,7 @@ export default function WeekView() {
 
           <button
             onClick={() => navigate('next')}
-            className="flex items-center gap-1 text-sm text-gray-600 hover:text-indigo-700 bg-white border border-gray-200 rounded-lg px-3 py-2 shadow-sm hover:shadow transition-all"
+            className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-300 hover:text-indigo-700 dark:hover:text-indigo-400 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 shadow-sm hover:shadow transition-all"
           >
             <span className="hidden sm:inline">Next</span>
             <ChevronRight className="w-4 h-4" />
@@ -146,15 +144,14 @@ export default function WeekView() {
 
             return (
               <div key={dateStr} className="space-y-3">
-                {/* Day header */}
                 <div
                   className={`text-center rounded-xl py-2.5 px-2 ring-2 ${
                     closed
-                      ? 'bg-gray-200 text-gray-500 ring-transparent'
+                      ? 'bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400 ring-transparent'
                       : isToday
                       ? 'bg-indigo-600 text-white ring-yellow-400'
                       : isPast
-                      ? 'bg-gray-400 text-white ring-transparent'
+                      ? 'bg-gray-400 dark:bg-gray-600 text-white ring-transparent'
                       : 'bg-indigo-600 text-white ring-transparent'
                   }`}
                 >
@@ -169,7 +166,6 @@ export default function WeekView() {
                   )}
                 </div>
 
-                {/* Morning + Afternoon shift cards */}
                 {SHIFTS.map(shift => (
                   <ShiftCard
                     key={shift.type}

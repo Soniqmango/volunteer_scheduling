@@ -30,42 +30,42 @@ export default function Register() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-white flex items-center justify-center px-4">
-      <div className="bg-white rounded-2xl shadow-md p-8 w-full max-w-sm">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-white dark:from-gray-900 dark:to-gray-800 flex items-center justify-center px-4">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-md p-8 w-full max-w-sm border border-transparent dark:border-gray-700">
         <div className="flex flex-col items-center gap-2 mb-7">
-          <CalendarDays className="w-10 h-10 text-indigo-600" />
-          <h1 className="text-xl font-bold text-gray-800 text-center">
+          <CalendarDays className="w-10 h-10 text-indigo-600 dark:text-indigo-400" />
+          <h1 className="text-xl font-bold text-gray-800 dark:text-gray-100 text-center">
             PTA Store Volunteers
           </h1>
         </div>
 
-        <h2 className="text-base font-semibold text-gray-600 mb-4">Create an account</h2>
+        <h2 className="text-base font-semibold text-gray-600 dark:text-gray-300 mb-4">Create an account</h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1">Full name</label>
+            <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">Full name</label>
             <input
               type="text"
               required
               autoComplete="name"
               value={fullName}
               onChange={e => setFullName(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-400"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1">Email</label>
+            <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">Email</label>
             <input
               type="email"
               required
               autoComplete="email"
               value={email}
               onChange={e => setEmail(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-400"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1">
+            <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">
               Password <span className="text-gray-400 font-normal">(min. 6 characters)</span>
             </label>
             <input
@@ -75,7 +75,7 @@ export default function Register() {
               minLength={6}
               value={password}
               onChange={e => setPassword(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-400"
             />
           </div>
           <button
@@ -87,9 +87,9 @@ export default function Register() {
           </button>
         </form>
 
-        <p className="mt-5 text-center text-sm text-gray-500">
+        <p className="mt-5 text-center text-sm text-gray-500 dark:text-gray-400">
           Already have an account?{' '}
-          <Link to="/login" className="text-indigo-600 hover:underline font-medium">
+          <Link to="/login" className="text-indigo-600 dark:text-indigo-400 hover:underline font-medium">
             Sign in
           </Link>
         </p>
