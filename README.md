@@ -27,7 +27,10 @@ comments        – per-shift discussion; flaggable as coverage requests
 closed_dates    – dates the store is closed (holidays, etc.)
 ```
 
-Row-Level Security is enabled on all tables.  The first registered user automatically becomes **admin**; all subsequent users are **volunteers**.
+Row-Level Security is enabled on all tables. 
+
+**ADMIN AND VOLUNTEER FORMATION STRUCTURE**
+The first registered user automatically becomes **admin**; all subsequent users are **volunteers**.
 
 ---
 
@@ -159,5 +162,5 @@ supabase/
 | Morning | 8:00 AM – 12:00 PM | 2 |
 | Afternoon | 12:00 PM – 4:00 PM | 3 |
 
-The schedule runs **Monday through Friday** only.  
+The schedule runs **Monday through Friday** only to align with most store hours.  
 Capacity is enforced by a PostgreSQL trigger — the database rejects over-bookings even under concurrent load.
