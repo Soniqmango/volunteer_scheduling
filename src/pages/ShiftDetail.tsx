@@ -7,7 +7,7 @@ import CommentList from '../components/CommentList';
 import { useAuth } from '../context/AuthContext';
 import { useSignups } from '../hook/useSignups';
 import { ShiftType, SHIFTS } from '../types';
-import { formatDayHeader } from '../lib/dates';
+import { formatDayHeader, toDateString } from '../lib/dates';
 
 export default function ShiftDetail() {
   const { date, type } = useParams<{ date: string; type: string }>();
@@ -24,6 +24,7 @@ export default function ShiftDetail() {
   );
 
   const signups = date && shiftType ? getShiftSignups(date, shiftType) : [];
+  const isPast  = !!date && date < toDateString(new Date());
 
   if (!validDate || !shiftType || !config) {
     return (
@@ -81,6 +82,7 @@ export default function ShiftDetail() {
               slotIndex={i}
               isAdmin={isAdmin}
               isOwnSlot={signups[i]?.volunteer_id === profile?.id}
+              isPast={isPast}
               allProfiles={[]}
               onSignup={() => signup(date!, shiftType, profile?.id ?? '')}
               onCancel={cancelSignup}

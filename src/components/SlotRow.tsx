@@ -30,6 +30,14 @@ export default function SlotRow({
   const [showAdminAdd, setShowAdminAdd] = useState(false);
   const [selectedVolId, setSelectedVolId] = useState('');
 
+  function handleCancel() {
+    const name = signup?.volunteer.full_name ?? 'this volunteer';
+    const msg  = isOwnSlot
+      ? 'Cancel your signup for this shift?'
+      : `Remove ${name} from this shift?`;
+    if (window.confirm(msg)) onCancel(signup!.id);
+  }
+
   // ── Filled slot ──────────────────────────────────────────────────────────
   if (signup) {
     return (
@@ -55,6 +63,7 @@ export default function SlotRow({
         </div>
 
         <div className="flex items-center gap-0.5 flex-shrink-0">
+          {/* Admin can always mark fulfilled (past or not) */}
           {isAdmin && (
             <button
               onClick={() => onFulfill(signup.id, !signup.is_fulfilled)}
@@ -68,9 +77,10 @@ export default function SlotRow({
               )}
             </button>
           )}
-          {(isOwnSlot || isAdmin) && (
+          {/* Volunteers can't cancel past shifts; admins always can */}
+          {(isOwnSlot && !isPast || isAdmin) && (
             <button
-              onClick={() => onCancel(signup.id)}
+              onClick={handleCancel}
               className="p-1 text-gray-400 hover:text-red-500 transition-colors"
               title="Cancel signup"
             >
@@ -85,9 +95,12 @@ export default function SlotRow({
   // ── Empty slot ───────────────────────────────────────────────────────────
   return (
     <div className="flex items-center justify-between px-3 py-2 rounded-lg border border-dashed border-gray-300 bg-gray-50">
-      <span className="text-sm text-gray-400">Slot {slotIndex + 1} – Open</span>
+      <span className="text-sm text-gray-400">
+        {isPast && !isAdmin ? 'Slot unfilled' : `Slot ${slotIndex + 1} – Open`}
+      </span>
 
-      {isAdmin ? (
+      {/* Past shift: volunteers see nothing; admins can still add for record-keeping */}
+      {isPast && !isAdmin ? null : isAdmin ? (
         showAdminAdd ? (
           <div className="flex items-center gap-1.5">
             <select
@@ -116,10 +129,7 @@ export default function SlotRow({
               Add
             </button>
             <button
-              onClick={() => {
-                setShowAdminAdd(false);
-                setSelectedVolId('');
-              }}
+              onClick={() => { setShowAdminAdd(false); setSelectedVolId(''); }}
               className="text-xs text-gray-400 hover:text-gray-600 px-1"
             >
               ✕
