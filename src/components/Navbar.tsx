@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { CalendarDays, LayoutDashboard, LogOut, Users } from 'lucide-react';
+import { CalendarDays, LayoutDashboard, LogOut, Users, ListChecks } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 export default function Navbar() {
@@ -31,6 +31,14 @@ export default function Navbar() {
             >
               <CalendarDays className="w-4 h-4" />
               <span className="hidden sm:inline">Schedule</span>
+            </Link>
+
+            <Link
+              to="/my-shifts"
+              className="flex items-center gap-1 text-sm px-2 py-1 rounded hover:bg-indigo-600 transition-colors"
+            >
+              <ListChecks className="w-4 h-4" />
+              <span className="hidden sm:inline">My Shifts</span>
             </Link>
 
             {profile?.role === 'admin' && (

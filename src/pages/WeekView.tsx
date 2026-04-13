@@ -49,23 +49,33 @@ export default function WeekView() {
       });
   }, [isAdmin]);
 
-  // Coverage request counts for this week (for the badges on shift cards)
+  // Coverage request counts for this week (real-time)
   useEffect(() => {
     const dates = dateKey.split(',');
-    supabase
-      .from('comments')
-      .select('shift_date, shift_type')
-      .in('shift_date', dates)
-      .eq('is_coverage_request', true)
-      .then(({ data }) => {
-        if (!data) return;
-        const counts: Record<string, number> = {};
-        (data as { shift_date: string; shift_type: string }[]).forEach(row => {
-          const key = `${row.shift_date}-${row.shift_type}`;
-          counts[key] = (counts[key] ?? 0) + 1;
-        });
-        setCoverageCounts(counts);
+
+    async function fetchCoverage() {
+      const { data } = await supabase
+        .from('comments')
+        .select('shift_date, shift_type')
+        .in('shift_date', dates)
+        .eq('is_coverage_request', true);
+      if (!data) return;
+      const counts: Record<string, number> = {};
+      (data as { shift_date: string; shift_type: string }[]).forEach(row => {
+        const key = `${row.shift_date}-${row.shift_type}`;
+        counts[key] = (counts[key] ?? 0) + 1;
       });
+      setCoverageCounts(counts);
+    }
+
+    fetchCoverage();
+
+    const channel = supabase
+      .channel(`coverage-${dateKey}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'comments' }, fetchCoverage)
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
   }, [dateKey]);
 
   function navigate(dir: 'prev' | 'next') {

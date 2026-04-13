@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, Sun, Sunset } from 'lucide-react';
 import { parseISO, isValid } from 'date-fns';
@@ -6,8 +7,9 @@ import SlotRow from '../components/SlotRow';
 import CommentList from '../components/CommentList';
 import { useAuth } from '../context/AuthContext';
 import { useSignups } from '../hook/useSignups';
-import { ShiftType, SHIFTS } from '../types';
+import { ShiftType, SHIFTS, Profile } from '../types';
 import { formatDayHeader, toDateString } from '../lib/dates';
+import { supabase } from '../lib/supabase';
 
 export default function ShiftDetail() {
   const { date, type } = useParams<{ date: string; type: string }>();
@@ -22,6 +24,16 @@ export default function ShiftDetail() {
   const { getShiftSignups, signup, cancelSignup, markFulfilled } = useSignups(
     validDate ? [validDate] : []
   );
+
+  const [allProfiles, setAllProfiles] = useState<Profile[]>([]);
+  useEffect(() => {
+    if (!isAdmin) return;
+    supabase
+      .from('profiles')
+      .select('*')
+      .order('full_name')
+      .then(({ data }) => { if (data) setAllProfiles(data as Profile[]); });
+  }, [isAdmin]);
 
   const signups = date && shiftType ? getShiftSignups(date, shiftType) : [];
   const isPast  = !!date && date < toDateString(new Date());
@@ -83,11 +95,11 @@ export default function ShiftDetail() {
               isAdmin={isAdmin}
               isOwnSlot={signups[i]?.volunteer_id === profile?.id}
               isPast={isPast}
-              allProfiles={[]}
+              allProfiles={allProfiles}
               onSignup={() => signup(date!, shiftType, profile?.id ?? '')}
               onCancel={cancelSignup}
               onFulfill={markFulfilled}
-              onAdminAdd={() => {}}
+              onAdminAdd={volId => signup(date!, shiftType, volId)}
             />
           ))}
         </div>

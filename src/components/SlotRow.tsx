@@ -78,7 +78,7 @@ export default function SlotRow({
             </button>
           )}
           {/* Volunteers can't cancel past shifts; admins always can */}
-          {(isOwnSlot && !isPast || isAdmin) && (
+          {((isOwnSlot && !isPast) || isAdmin) && (
             <button
               onClick={handleCancel}
               className="p-1 text-gray-400 hover:text-red-500 transition-colors"
