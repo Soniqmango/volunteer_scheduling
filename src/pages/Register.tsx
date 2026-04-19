@@ -3,6 +3,12 @@ import { Link, useNavigate } from 'react-router-dom';
 import { CalendarDays } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { supabase } from '../lib/supabase';
+import { sanitizeText } from '../lib/sanitize';
+
+const FULL_NAME_MAX = 100;
+const EMAIL_MAX     = 254;
+const PASSWORD_MIN  = 8;
+const PASSWORD_MAX  = 128;
 
 export default function Register() {
   const navigate = useNavigate();
@@ -13,17 +19,35 @@ export default function Register() {
 
   async function handleSubmit(e: { preventDefault(): void }) {
     e.preventDefault();
-    if (password.length < 6) {
-      toast.error('Password must be at least 6 characters.');
+
+    const cleanName  = sanitizeText(fullName);
+    const cleanEmail = sanitizeText(email);
+
+    if (cleanName.length < 2) {
+      toast.error('Please enter your full name.');
       return;
     }
+    if (cleanName.length > FULL_NAME_MAX) {
+      toast.error(`Name must be ${FULL_NAME_MAX} characters or fewer.`);
+      return;
+    }
+    if (password.length < PASSWORD_MIN) {
+      toast.error(`Password must be at least ${PASSWORD_MIN} characters.`);
+      return;
+    }
+    if (password.length > PASSWORD_MAX) {
+      toast.error(`Password must be ${PASSWORD_MAX} characters or fewer.`);
+      return;
+    }
+
     setLoading(true);
     const { error } = await supabase.auth.signUp({
-      email,
+      email:    cleanEmail,
       password,
-      options: { data: { full_name: fullName } },
+      options: { data: { full_name: cleanName } },
     });
     setLoading(false);
+
     if (error) { toast.error(error.message); return; }
     toast.success('Account created! Check your email to confirm, then sign in.');
     navigate('/login');
@@ -48,6 +72,7 @@ export default function Register() {
               type="text"
               required
               autoComplete="name"
+              maxLength={FULL_NAME_MAX}
               value={fullName}
               onChange={e => setFullName(e.target.value)}
               className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-400"
@@ -59,6 +84,7 @@ export default function Register() {
               type="email"
               required
               autoComplete="email"
+              maxLength={EMAIL_MAX}
               value={email}
               onChange={e => setEmail(e.target.value)}
               className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-400"
@@ -66,13 +92,15 @@ export default function Register() {
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">
-              Password <span className="text-gray-400 font-normal">(min. 6 characters)</span>
+              Password{' '}
+              <span className="text-gray-400 font-normal">(min. {PASSWORD_MIN} characters)</span>
             </label>
             <input
               type="password"
               required
               autoComplete="new-password"
-              minLength={6}
+              minLength={PASSWORD_MIN}
+              maxLength={PASSWORD_MAX}
               value={password}
               onChange={e => setPassword(e.target.value)}
               className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-400"

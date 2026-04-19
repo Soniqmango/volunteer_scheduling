@@ -15,6 +15,7 @@ import {
 import Navbar from '../../components/Navbar';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
+import { sanitizeText } from '../../lib/sanitize';
 import { useClosedDates } from '../../hook/useClosedDates';
 import { supabase } from '../../lib/supabase';
 import { Signup, Profile, SHIFTS } from '../../types';
@@ -127,7 +128,7 @@ export default function Dashboard() {
 
   async function handleAddClosed() {
     if (!newDate || !adminProfile) return;
-    const ok = await addClosedDate(newDate, newReason, adminProfile.id);
+    const ok = await addClosedDate(newDate, sanitizeText(newReason), adminProfile.id);
     if (ok) { setNewDate(''); setNewReason(''); }
   }
 
@@ -344,6 +345,7 @@ export default function Dashboard() {
                   value={newReason}
                   onChange={e => setNewReason(e.target.value)}
                   placeholder="e.g. Thanksgiving, Winter Break"
+                  maxLength={200}
                   className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-1.5 text-sm bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-400"
                 />
               </div>
