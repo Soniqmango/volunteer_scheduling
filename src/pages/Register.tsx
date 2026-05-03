@@ -4,6 +4,7 @@ import { CalendarDays } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { supabase } from '../lib/supabase';
 import { sanitizeText } from '../lib/sanitize';
+import { checkRateLimit, recordFailedAttempt, clearAttempts } from '../lib/rateLimit';
 
 const FULL_NAME_MAX = 100;
 const EMAIL_MAX     = 254;
@@ -20,8 +21,9 @@ export default function Register() {
   async function handleSubmit(e: { preventDefault(): void }) {
     e.preventDefault();
 
-    const cleanName  = sanitizeText(fullName);
-    const cleanEmail = sanitizeText(email);
+    const cleanName     = sanitizeText(fullName);
+    const cleanEmail    = sanitizeText(email);
+    const cleanPassword = sanitizeText(password);
 
     if (cleanName.length < 2) {
       toast.error('Please enter your full name.');
@@ -31,24 +33,36 @@ export default function Register() {
       toast.error(`Name must be ${FULL_NAME_MAX} characters or fewer.`);
       return;
     }
-    if (password.length < PASSWORD_MIN) {
+    if (cleanPassword.length < PASSWORD_MIN) {
       toast.error(`Password must be at least ${PASSWORD_MIN} characters.`);
       return;
     }
-    if (password.length > PASSWORD_MAX) {
+    if (cleanPassword.length > PASSWORD_MAX) {
       toast.error(`Password must be ${PASSWORD_MAX} characters or fewer.`);
+      return;
+    }
+
+    const { blocked, secondsUntilReset } = checkRateLimit(cleanEmail);
+    if (blocked) {
+      toast.error(`Too many attempts. Try again in ${Math.ceil(secondsUntilReset / 60)} min.`);
       return;
     }
 
     setLoading(true);
     const { error } = await supabase.auth.signUp({
       email:    cleanEmail,
-      password,
+      password: cleanPassword,
       options: { data: { full_name: cleanName } },
     });
     setLoading(false);
 
-    if (error) { toast.error(error.message); return; }
+    if (error) {
+      recordFailedAttempt(cleanEmail);
+      toast.error(error.message);
+      return;
+    }
+
+    clearAttempts(cleanEmail);
     toast.success('Account created! Check your email to confirm, then sign in.');
     navigate('/login');
   }
